@@ -5,6 +5,9 @@ import com.example.productlist.models.ListResponse;
 import com.example.productlist.models.Product;
 import com.example.productlist.Repository.ListMongoRepository;
 import com.example.productlist.Repository.ProductMongoRepository;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,31 +21,36 @@ public class ListController {
 
     private ListMongoRepository listMongoRepository;
     private ProductMongoRepository productMongoRepository;
-    private ListResponse listResponse;
 
     @Autowired
-    public ListController(ListMongoRepository listMongoRepository, ProductMongoRepository productMongoRepository, ListResponse listResponse) {
+    public ListController(ListMongoRepository listMongoRepository, ProductMongoRepository productMongoRepository) {
         this.productMongoRepository = productMongoRepository;
         this.listMongoRepository = listMongoRepository;
-        this.listResponse = listResponse;
     }
 
+    @ApiOperation(value = "Get all lists", notes = "Get all lists of the collection")
     @RequestMapping("/lists")
     public java.util.List<List> getLists() {
         return listMongoRepository.findAll();
     }
 
+    @ApiOperation(value = "Get a list by id", notes = "Returns a list with the specified id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved"),
+            @ApiResponse(code = 404, message = "Not found - The list was not found")
+    })
     @RequestMapping("/lists/{id}")
     public ResponseEntity<?> getList(@PathVariable("id") Long id){
         Optional<List> optionalList = listMongoRepository.findById(id);
         if(!optionalList.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        listResponse.setProductList(optionalList.get());
-        listResponse.setTotalKcal(optionalList.get().getProductList().stream().mapToInt(Product::getKcal).sum());
-        return new ResponseEntity<>(listResponse, HttpStatus.OK);
+        return new ResponseEntity<>(new ListResponse(optionalList.get(),
+                optionalList.get().getProductList().stream().mapToInt(Product::getKcal).sum()),
+                HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Add a list", notes = "Saves a list with the specified values")
     @PostMapping("/lists")
     public void add(List list) {
         if(list.getId()==0) {
@@ -51,6 +59,11 @@ public class ListController {
         listMongoRepository.save(list);
     }
 
+    @ApiOperation(value = "Add a product to the specified list", notes = "Saves a product into the specified list and returns the list with total calories")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully saved"),
+            @ApiResponse(code = 404, message = "Not found - The list was not found")
+    })
     @PostMapping("/lists/addProduct")
     public ResponseEntity<?> add(long productId, long listId) {
         Optional<Product> optionalProduct = productMongoRepository.findById(productId);
@@ -62,9 +75,7 @@ public class ListController {
         productList.add(optionalProduct.get());
         optionalList.get().setProductList(productList);
         listMongoRepository.save(optionalList.get());
-        listResponse.setProductList(optionalList.get());
-        listResponse.setTotalKcal(productList.stream().mapToInt(Product::getKcal).sum());
-        return new ResponseEntity<>(listResponse, HttpStatus.OK);
+        return new ResponseEntity<>(new ListResponse(optionalList.get(), productList.stream().mapToInt(Product::getKcal).sum()), HttpStatus.OK);
     }
 
 }

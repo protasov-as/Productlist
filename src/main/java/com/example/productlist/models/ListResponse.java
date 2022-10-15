@@ -2,8 +2,6 @@ package com.example.productlist.models;
 
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-
 @Component
 public class ListResponse {
     int totalKcal;

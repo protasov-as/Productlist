@@ -26,8 +26,6 @@ public class List {
         this.id = this.hashCode();
         this.name = name;
         this.productList = new ArrayList<>();
-//        this.productList.add(new Product("nn", "dd", 777));
-//        this.productList.add(new Product("nnNN", "ddDD", 77799));
     }
 
     public long getId() {
