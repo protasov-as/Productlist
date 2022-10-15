@@ -4,6 +4,7 @@ import com.example.productlist.models.Product;
 import com.example.productlist.Repository.ProductMongoRepository;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ public class ProductController {
     }
 
     @ApiOperation(value = "Get all products", notes = "Retrieves all products from the collection")
-    @RequestMapping("/products")
+    @GetMapping("/products")
     public List<Product> getProducts(){
         return productMongoRepository.findAll();
     }
@@ -34,8 +35,5 @@ public class ProductController {
         }
         productMongoRepository.save(product);
     }
-
-
-
 
 }

@@ -1,18 +1,12 @@
 package com.example.productlist.models;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class ListResponse {
-    int totalKcal;
-    List productList;
+    private int totalKcal;
+    private List productList;
 
     public ListResponse(List productList, int totalKcal) {
         this.totalKcal = totalKcal;
         this.productList = productList;
-    }
-
-    public ListResponse() {
     }
 
     public int getTotalKcal() {
@@ -21,13 +15,5 @@ public class ListResponse {
 
     public List getProductList() {
         return productList;
-    }
-
-    public void setTotalKcal(int totalKcal) {
-        this.totalKcal = totalKcal;
-    }
-
-    public void setProductList(List productList) {
-        this.productList = productList;
     }
 }

@@ -29,7 +29,7 @@ public class ListController {
     }
 
     @ApiOperation(value = "Get all lists", notes = "Get all lists of the collection")
-    @RequestMapping("/lists")
+    @GetMapping("/lists")
     public java.util.List<List> getLists() {
         return listMongoRepository.findAll();
     }
@@ -39,7 +39,7 @@ public class ListController {
             @ApiResponse(code = 200, message = "Successfully retrieved"),
             @ApiResponse(code = 404, message = "Not found - The list was not found")
     })
-    @RequestMapping("/lists/{id}")
+    @GetMapping(value = "/lists/{id}")
     public ResponseEntity<?> getList(@PathVariable("id") Long id){
         Optional<List> optionalList = listMongoRepository.findById(id);
         if(!optionalList.isPresent()) {
