@@ -52,11 +52,15 @@ public class ListController {
 
     @ApiOperation(value = "Add a list", notes = "Saves a list with the specified values")
     @PostMapping("/lists")
-    public void add(List list) {
+    public ResponseEntity<Object> add(List list) {
+        if(list.getName().isEmpty()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         if(list.getId()==0) {
             list.setId(list.hashCode());
         }
         listMongoRepository.save(list);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ApiOperation(value = "Add a product to the specified list", notes = "Saves a product into the specified list and returns the list with total calories")
